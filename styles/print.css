@@ -1,0 +1,91 @@
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .page {
+        width: 21cm;
+        min-height: 29.7cm;
+        padding: var(--page-margin);
+        margin: 0;
+        border: none;
+        background: none;
+        page-break-after: always;
+    }
+
+    .page:last-child {
+        page-break-after: avoid;
+    }
+
+    .cover-page {
+        background-image: none !important;
+        background-color: var(--primary-color);
+    }
+
+    .content-page {
+        background-image: none !important;
+    }
+
+    .page-header,
+    .page-footer {
+        position: fixed;
+        left: var(--page-margin);
+        right: var(--page-margin);
+    }
+
+    .page-header {
+        top: 0;
+    }
+
+    .page-footer {
+        bottom: 0;
+    }
+
+    .page-content {
+        margin-top: var(--header-height);
+        margin-bottom: var(--footer-height);
+    }
+
+    /* Ensure charts and tables are visible in print */
+    .chart-container,
+    .table {
+        background-color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Hide elements that shouldn't be printed */
+    .no-print {
+        display: none !important;
+    }
+
+    /* Ensure text is black for better printing */
+    body {
+        color: black;
+    }
+
+    /* Ensure links are visible in print */
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    /* Ensure proper page breaks */
+    h2, h3, h4 {
+        page-break-after: avoid;
+    }
+
+    table {
+        page-break-inside: avoid;
+    }
+
+    img {
+        page-break-inside: avoid;
+    }
+} 
