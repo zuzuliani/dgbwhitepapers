@@ -29,7 +29,7 @@ async function readMarkdownFile(filePath) {
 
 // Helper function to parse frontmatter
 function parseFrontmatter(content) {
-    const match = content.match(/^---\n([\s\S]*?)\n---/);
+    const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (match) {
         try {
             const frontmatter = yaml.load(match[1]);
