@@ -58,17 +58,17 @@ Para a nossa análise, avaliamos todas as atividades em três dimensões:
 
 Além das classificações acima, ainda realizamos análises adicionais sobre aplicação da tecnologia, riscos, exemplos práticos – tudo culminando numa avaliação qualitativa final sobre o impacto em cada atividade:
 
-**GenAI – Texto (Sim/Não):** Indica se a IA generativa pode ser usada para ler, gerar ou resumir conteúdos baseados em texto relacionados à atividade.
+- **GenAI – Texto (Sim/Não):** Indica se a IA generativa pode ser usada para ler, gerar ou resumir conteúdos baseados em texto relacionados à atividade.
 
-**GenAI – Imagem/Formulário (Sim/Não):** Indica se a IA generativa ou a visão computacional podem ajudar a interpretar imagens, formulários ou entradas visuais (ex.: OCR, preenchimento de formulários com base em fotos).
+- **GenAI – Imagem/Formulário (Sim/Não):** Indica se a IA generativa ou a visão computacional podem ajudar a interpretar imagens, formulários ou entradas visuais (ex.: OCR, preenchimento de formulários com base em fotos).
 
-**IA Preditiva (Sim/Não):** Indica se a IA preditiva pode ser aplicada para prever resultados, recomendar decisões ou detectar padrões com base em dados históricos.
+- **IA Preditiva (Sim/Não):** Indica se a IA preditiva pode ser aplicada para prever resultados, recomendar decisões ou detectar padrões com base em dados históricos.
 
-**Riscos/Restrições:** Resumo dos principais riscos, limitações ou restrições — legais, éticas, técnicas ou operacionais — que podem impactar a viabilidade da automação.
+- **Riscos/Restrições:** Resumo dos principais riscos, limitações ou restrições — legais, éticas, técnicas ou operacionais — que podem impactar a viabilidade da automação.
 
-**Caso de Uso Prático:** Um exemplo real ou ilustrativo de como a IA poderia ser, ou está sendo usada para automatizar ou aprimorar essa atividade.
+- **Caso de Uso Prático:** Um exemplo real ou ilustrativo de como a IA poderia ser, ou está sendo usada para automatizar ou aprimorar essa atividade.
 
-**Descrição Final do Impacto:** Uma narrativa concisa que resume o impacto geral.
+- **Descrição Final do Impacto:** Uma narrativa concisa que resume o impacto geral.
 
 [GAP]
 
