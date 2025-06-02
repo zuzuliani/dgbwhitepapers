@@ -1,6 +1,6 @@
 @media print {
     @page {
-        size: A4;
+        size: 21cm 29.7cm;
         margin: 0;
     }
 
@@ -11,22 +11,25 @@
 
     .page {
         width: 21cm;
+        height: 29.7cm;
         min-height: 29.7cm;
+        max-height: 29.7cm;
         padding: var(--page-margin);
         margin: 0;
         border: none;
         background: none;
+        box-shadow: none;
         page-break-after: always;
+    }
+
+    .page + .page {
+        margin-top: 0 !important;
     }
 
     .page:last-child {
         page-break-after: avoid;
     }
 
-    .cover-page {
-        background-image: none !important;
-        background-color: var(--primary-color);
-    }
 
     .content-page {
         background-image: none !important;

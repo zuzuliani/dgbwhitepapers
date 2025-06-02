@@ -95,6 +95,37 @@ app.get('/', async (req, res) => {
     }
 });
 
+// Helper: Paginate HTML content into .page.content-page divs (placeholder, to be replaced with Puppeteer logic)
+function paginateContentToPages(htmlContent) {
+    // Split on [PAGEBREAK] marker (case-insensitive, allow with or without surrounding whitespace)
+    const parts = htmlContent.split(/\[PAGEBREAK\]/gi);
+    return parts.map(part => `
+        <div class="page content-page">
+            <header class="page-header">
+                <div class="header-content">
+                    <div class="header-left d-flex align-items-center">
+                        <span class="dot dot-navy"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-orange"></span>
+                    </div>
+                    <div class="header-right">
+                        <img src="/images/logo.jpg" alt="DGB Logo" class="header-logo">
+                    </div>
+                </div>
+            </header>
+            <main class="page-content">
+                ${part}
+            </main>
+            <footer class="page-footer">
+                <div class="footer-content">
+                    <div class="footer-left">Confidential</div>
+                    <div class="footer-right">© ${new Date().getFullYear()} DGB Consultores</div>
+                </div>
+            </footer>
+        </div>
+    `);
+}
+
 // Dynamic paper route: /:paperName renders papers/paperName.md
 app.get('/:paperName', async (req, res, next) => {
     const paperName = req.params.paperName;
@@ -110,27 +141,25 @@ app.get('/:paperName', async (req, res, next) => {
         const processedContent = templateProcessor.processContent(content);
         // Convert markdown to HTML
         const htmlContent = marked.parse(processedContent);
-        // Inject into the template (reuse your existing HTML template code)
-        const html = `<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${frontmatter.title || paperName}</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="/styles/main.css" rel="stylesheet">
-            <link href="/styles/print.css" rel="stylesheet" media="print">
-        </head>
-        <body>
-            <!-- Cover Page -->
-            <div class="page cover-page">
-                <div class="cover-overlay">
+        // Paginate content into .page.content-page divs
+        const contentPages = paginateContentToPages(htmlContent);
+        // Generate the cover page statically from frontmatter
+        const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
+        const coverPage = `
+            <div class="page cover-page" style="position: relative;">
+                <img src='${baseUrl}/images/cover.jpg' style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;" alt="Cover Background">
+                <div class="cover-overlay" style="position: relative; z-index: 1;">
                     <div class="cover-quote">
                         ${frontmatter.coverQuote || ''}
                     </div>
                     <div class="cover-title-block">
                         <div class="cover-year">${frontmatter.year || ''}</div>
-                        <div class="cover-title">${frontmatter.title || ''}</div>
+                        <div class="cover-title">
+                            ${frontmatter.title_main || ''}<br>
+                            <span class="cover-title-accent" style="background: linear-gradient(90deg, #ffcc00 0%, #ff5500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; font-size: 2.5rem; font-family: 'Roboto', Arial, Helvetica, sans-serif; font-weight: 900; letter-spacing: 0.02em;">
+                                ${frontmatter.title_accent || ''}
+                            </span>
+                        </div>
                     </div>
                     <div class="cover-footer">
                         <div class="cover-contact-row">
@@ -145,7 +174,7 @@ app.get('/:paperName', async (req, res, next) => {
                             </div>
                         </div>
                         <div class="cover-author-row">
-                            <img src="/images/author.jpg" alt="${frontmatter.author || ''}" class="cover-author-photo">
+                            <img src="${frontmatter.author_photo || '/images/author.jpg'}" alt="${frontmatter.author || ''}" class="cover-author-photo">
                             <div>
                                 <div class="author-name">${frontmatter.author || ''}</div>
                                 <div class="author-role">${frontmatter.role || ''}</div>
@@ -154,30 +183,23 @@ app.get('/:paperName', async (req, res, next) => {
                     </div>
                 </div>
             </div>
-            <!-- Content Pages -->
-            <div class="page content-page">
-                <header class="page-header">
-                    <div class="header-content">
-                        <div class="header-left d-flex align-items-center">
-                            <span class="dot dot-navy"></span>
-                            <span class="dot dot-yellow"></span>
-                            <span class="dot dot-orange"></span>
-                        </div>
-                        <div class="header-right">
-                            <img src="/images/logo.jpg" alt="DGB Logo" class="header-logo">
-                        </div>
-                    </div>
-                </header>
-                <main class="page-content">
-                    ${htmlContent}
-                </main>
-                <footer class="page-footer">
-                    <div class="footer-content">
-                        <div class="footer-left">Confidential</div>
-                        <div class="footer-right">© ${new Date().getFullYear()} DGB Consultores</div>
-                    </div>
-                </footer>
-            </div>
+        `;
+        // Concatenate cover and content pages
+        const html = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${frontmatter.title_main || paperName} ${frontmatter.title_accent || ''}</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="/styles/main.css" rel="stylesheet">
+            <link href="/styles/print.css" rel="stylesheet" media="print">
+            <link href="/styles/print-style-override.css" rel="stylesheet" media="print">
+        </head>
+        <body>
+            ${coverPage}
+            ${contentPages.join('\n')}
+            <a href="/${paperName}/pdf" class="export-pdf-btn" download>Export as PDF</a>
         </body>
         </html>`;
         res.send(html);
@@ -187,24 +209,79 @@ app.get('/:paperName', async (req, res, next) => {
 });
 
 // PDF generation route
-app.get('/paper/:paperName/pdf', async (req, res) => {
+app.get('/:paperName/pdf', async (req, res) => {
     const paperName = req.params.paperName;
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     
+    const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
+    
     try {
-        // Load the paper's HTML version
-        await page.goto(`http://localhost:${port}/paper/${paperName}`, {
+        await page.goto(`http://localhost:${port}/${paperName}`, {
             waitUntil: 'networkidle0'
         });
+        // Wait for all images (including background images) to load
+        await page.evaluate(async () => {
+            // Wait for <img> tags
+            const imgPromises = Array.from(document.images).map(img => img.complete ? null : new Promise(resolve => { img.onload = img.onerror = resolve; }));
+            // Wait for background images
+            const bgPromises = Array.from(document.querySelectorAll('*')).map(el => {
+                const bg = window.getComputedStyle(el).backgroundImage;
+                if (bg && bg !== 'none' && bg.includes('url(')) {
+                    // Create a dummy image to check loading
+                    const url = bg.match(/url\(["']?(.*?)["']?\)/)[1];
+                    return new Promise(resolve => {
+                        const img = new window.Image();
+                        img.onload = img.onerror = resolve;
+                        img.src = url;
+                    });
+                }
+                return null;
+            });
+            await Promise.all([...imgPromises, ...bgPromises].filter(Boolean));
+        });
+        // Remove main.css and add print-pdf.css
+        await page.evaluate(() => {
+            document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                if (link.href.includes('main.css')) link.remove();
+            });
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '/styles/print-pdf.css';
+            document.head.appendChild(link);
+        });
+        // Wait for fonts to load
+        await page.evaluateHandle('document.fonts.ready');
+        // Set viewport to match your design (A4 at 96dpi is about 794x1123, but you may want higher for retina)
+        await page.setViewport({ width: 1240, height: 1754 });
 
-        // Generate PDF
+        // Patch CSS to use absolute URL for cover image
+        await page.evaluate((baseUrl) => {
+            // Patch <style> tags
+            document.querySelectorAll('style').forEach(styleEl => {
+                if (styleEl.innerHTML && styleEl.innerHTML.includes("/images/cover.jpg")) {
+                    styleEl.innerHTML = styleEl.innerHTML.replace(
+                        /url\(['"]?\/images\/cover\.jpg['"]?\)/g,
+                        `url('${baseUrl}/images/cover.jpg')`
+                    );
+                }
+            });
+            // Patch inline style attributes
+            document.querySelectorAll('[style]').forEach(el => {
+                if (el.style.backgroundImage && el.style.backgroundImage.includes('/images/cover.jpg')) {
+                    el.style.backgroundImage = `url('${baseUrl}/images/cover.jpg')`;
+                }
+            });
+        }, baseUrl);
+
         const pdf = await page.pdf({
-            format: 'A4',
+            width: '210mm',
+            height: '297mm',
             printBackground: true,
-            margin: {top: '0cm', right: '0cm', bottom: '0cm', left: '0cm'}
+            margin: { top: '0cm', right: '0cm', bottom: '0cm', left: '0cm' }
         });
 
+        res.setHeader('Content-Disposition', `attachment; filename="${paperName}.pdf"`);
         res.contentType('application/pdf');
         res.send(pdf);
     } catch (error) {

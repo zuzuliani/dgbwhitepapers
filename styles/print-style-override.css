@@ -1,0 +1,16 @@
+@media print {
+  body > .page + .page,
+  .page + .page {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  .page {
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+} 
