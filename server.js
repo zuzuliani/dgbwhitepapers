@@ -168,7 +168,16 @@ app.get('/:paperName', async (req, res, next) => {
 // PDF generation route
 app.get('/:paperName/pdf', async (req, res) => {
     const paperName = req.params.paperName;
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        headless: "new",
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu'
+        ]
+    });
     const page = await browser.newPage();
     
     const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
