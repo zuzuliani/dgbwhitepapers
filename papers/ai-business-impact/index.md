@@ -32,9 +32,7 @@ O futuro do trabalho já começou. Este estudo oferece uma bússola para quem qu
 
 Para este estudo, foi utilizado como base a última versão do "Process Classification Framework - Cross-Industry", da APQC. O framework fornece uma base de 1300 atividades, divididas em Categorias, Grupos de Processos e Processos.
 
-Para analisar as 1300 atividades presentes no documento, um algoritmo utilizando Python e ChatGPT 4o da OpenAI foi criado.
-
-Para garantir resultados mais sólidos, cada atividade foi analisada por 3 agentes (chatGPT) separadamente e, posteriormente, consolidados, fazendo-se a média das notas e a consolidação das análises qualitativas (toda a base é avaliada três vezes para garantir resultados mais sólidos).
+Para analisar as 1300 atividades presentes no documento, um algoritmo utilizando Python e ChatGPT 4o da OpenAI foi criado. Para garantir resultados mais sólidos, cada atividade foi analisada por 3 agentes (chatGPT) separadamente e, posteriormente, consolidados.
 
 **Ilustração do algoritmo**
 [LEGEND]
@@ -490,6 +488,6 @@ Na DGB Consultores, estamos estruturando o uso de inteligência artificial de fo
 
 Atualmente, oferecemos aos nossos clientes a **Risetool**, uma plataforma que apoia a criação e o acompanhamento da estratégia e metas, utilizada nos projetos de planejamento estratégico. Estamos evoluindo essa solução para um sistema completo de gestão orientado por IA — uma plataforma **AI-first**, construída para repensar como decisões são tomadas, acompanhadas e ajustadas ao longo do tempo.
 
-[IMAGE][images/fridday.png][width=100%]
+[IMAGE][images/fridday.png][width=90%]
 
 [END]
