@@ -69,6 +69,11 @@ class TemplateProcessor {
     }
 
     async processContent(content) {
+        // Trim all content after [END] marker
+        const endIdx = content.indexOf('[END]');
+        if (endIdx !== -1) {
+            content = content.slice(0, endIdx);
+        }
         console.log('--- processContent called ---');
         console.log('First 500 chars of content:', content.slice(0, 500));
         console.log('QUEMSOMOS present:', content.includes('[QUEMSOMOS]'));

@@ -491,3 +491,5 @@ Na DGB Consultores, estamos estruturando o uso de inteligência artificial de fo
 Atualmente, oferecemos aos nossos clientes a **Risetool**, uma plataforma que apoia a criação e o acompanhamento da estratégia e metas, utilizada nos projetos de planejamento estratégico. Estamos evoluindo essa solução para um sistema completo de gestão orientado por IA — uma plataforma **AI-first**, construída para repensar como decisões são tomadas, acompanhadas e ajustadas ao longo do tempo.
 
 [IMAGE][images/fridday.png][width=100%]
+
+[END]
