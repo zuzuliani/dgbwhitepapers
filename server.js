@@ -5,101 +5,31 @@ const marked = require('marked');
 const puppeteer = require('puppeteer');
 const yaml = require('js-yaml');
 const TemplateProcessor = require('./js/template-processor');
+const matter = require('gray-matter');
+const fsSync = require('fs'); // for sync read of template
 
 const app = express();
 const port = process.env.PORT || 3000;
-const templateProcessor = new TemplateProcessor();
+
+// Configure marked to allow raw HTML
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  mangle: false,
+  headerIds: false,
+  // For marked >= 4.x, sanitize is removed, so just don't use it
+  // sanitize: false, // For older versions
+  // renderer: new marked.Renderer(), // Not needed unless customizing
+});
 
 // Serve static files
 app.use(express.static('.'));
 
-// Initialize template processor
-templateProcessor.loadTemplates().catch(console.error);
-
-// Helper function to read markdown files
-async function readMarkdownFile(filePath) {
-    try {
-        const content = await fs.readFile(filePath, 'utf8');
-        return content;
-    } catch (error) {
-        console.error(`Error reading file ${filePath}:`, error);
-        return null;
-    }
-}
-
-// Helper function to parse frontmatter
-function parseFrontmatter(content) {
-    const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-    if (match) {
-        try {
-            const frontmatter = yaml.load(match[1]);
-            const markdown = content.slice(match[0].length).trim();
-            return { frontmatter, markdown };
-        } catch (error) {
-            console.error('Error parsing frontmatter:', error);
-            return { frontmatter: {}, markdown: content };
-        }
-    }
-    return { frontmatter: {}, markdown: content };
-}
-
-// Helper function to get all papers
-async function getAllPapers() {
-    const papersDir = path.join(__dirname, 'papers');
-    try {
-        const entries = await fs.readdir(papersDir, { withFileTypes: true });
-        return entries
-            .filter(entry => entry.isDirectory())
-            .map(entry => entry.name);
-    } catch (error) {
-        console.error('Error reading papers directory:', error);
-        return [];
-    }
-}
-
-// Homepage: List all papers in /papers as links
-app.get('/', async (req, res) => {
-    try {
-        const papersDir = path.join(__dirname, 'papers');
-        const files = await fs.readdir(papersDir);
-        const papers = files.filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, ''));
-        const papersList = papers.map(paper => `
-            <div class="paper-card">
-                <h2>${paper}</h2>
-                <a href="/${paper}" class="btn btn-primary">Read Paper</a>
-            </div>
-        `).join('');
-        const html = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>DGB White Papers</title>
-                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-                <link href="styles/main.css" rel="stylesheet">
-            </head>
-            <body>
-                <div class="container mt-5">
-                    <h1 class="mb-4">DGB White Papers</h1>
-                    <div class="row">
-                        ${papersList}
-                    </div>
-                </div>
-            </body>
-            </html>
-        `;
-        res.send(html);
-    } catch (error) {
-        res.status(500).send('Error loading papers');
-    }
-});
-
-// Helper: Paginate HTML content into .page.content-page divs (placeholder, to be replaced with Puppeteer logic)
-function paginateContentToPages(htmlContent) {
+// Helper: Paginate HTML content into .page.content-page divs
+function paginateContentToPages(markdownContent) {
     // Split on [PAGEBREAK] marker (case-insensitive, allow with or without surrounding whitespace)
-    const parts = htmlContent.split(/\[PAGEBREAK\]/gi);
-    return parts.map(part => `
+    const parts = markdownContent.split(/\[PAGEBREAK\]/gi);
+    return parts.map((part, idx) => `
         <div class="page content-page">
             <header class="page-header">
                 <div class="header-content">
@@ -118,73 +48,94 @@ function paginateContentToPages(htmlContent) {
             </main>
             <footer class="page-footer">
                 <div class="footer-content">
-                    <div class="footer-left">Confidential</div>
-                    <div class="footer-right">© ${new Date().getFullYear()} DGB Consultores</div>
+                    <div class="footer-left">DGB | Consultores</div>
+                    <div class="footer-right"><span class="page-number"></span></div>
                 </div>
             </footer>
         </div>
     `);
 }
 
-// Dynamic paper route: /:paperName renders papers/paperName.md
+// Dynamic paper route: /:paperName renders papers/paperName/index.md
 app.get('/:paperName', async (req, res, next) => {
     const paperName = req.params.paperName;
-    // Ignore requests for static files (like .css, .js, .png, etc.)
+    
+    // Ignore requests for static files
     if (paperName.includes('.')) return next();
-    const markdownPath = path.join(__dirname, 'papers', `${paperName}.md`);
+    
     try {
-        const markdown = await readMarkdownFile(markdownPath);
-        if (!markdown) return res.status(404).send('Paper not found');
-        // Parse frontmatter and markdown content
-        const { frontmatter, markdown: content } = parseFrontmatter(markdown);
-        // Process templates in the content
-        const processedContent = templateProcessor.processContent(content);
-        // Convert markdown to HTML
-        const htmlContent = marked.parse(processedContent);
-        // Paginate content into .page.content-page divs
+        // Initialize template processor
+        const templateProcessor = new TemplateProcessor();
+        await templateProcessor.loadTemplates();
+
+        // Read and parse markdown file
+        const markdownPath = path.join(__dirname, 'papers', paperName, 'index.md');
+        const markdown = await fs.readFile(markdownPath, 'utf8');
+        const { content, data: frontmatter } = matter(markdown);
+        
+        // Process markdown content
+        const processed = await templateProcessor.processContent(content);
+        let htmlContent = marked.parse(processed.content);
+        // Replace tree placeholders with actual HTML
+        if (processed.treeBlocks && processed.treeBlocks.length) {
+            processed.treeBlocks.forEach((treeHtml, idx) => {
+                htmlContent = htmlContent.replace(`[[TREE_BLOCK_${idx}]]`, treeHtml);
+            });
+        }
+        // Replace QUEMSOMOS placeholder with actual HTML, removing <p> wrapper if present
+        console.log('--- BEFORE REPLACEMENT ---');
+        console.log(htmlContent.slice(0, 1000)); // print first 1000 chars for brevity
+        console.log('quemSomosBlock:', !!processed.quemSomosBlock);
+        if (processed.quemSomosBlock) {
+            htmlContent = htmlContent.replace(
+                /<p>\s*\[\[QUEMSOMOS_BLOCK\]\]\s*<\/p>/g,
+                processed.quemSomosBlock
+            );
+            htmlContent = htmlContent.split('[[QUEMSOMOS_BLOCK]]').join(processed.quemSomosBlock);
+        }
+        console.log('--- AFTER REPLACEMENT ---');
+        console.log(htmlContent.slice(0, 1000));
         const contentPages = paginateContentToPages(htmlContent);
-        // Generate the cover page statically from frontmatter
-        const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
-        const coverPage = `
-            <div class="page cover-page" style="position: relative;">
-                <img src='${baseUrl}/images/cover.jpg' style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;" alt="Cover Background">
-                <div class="cover-overlay" style="position: relative; z-index: 1;">
-                    <div class="cover-quote">
-                        ${frontmatter.coverQuote || ''}
+        
+        // Generate cover overlay HTML (existing content, no header)
+        const overlayHtml = `
+            <div class="cover-quote">${frontmatter.quote || ''}</div>
+            <div class="cover-title-block">
+                <div class="cover-year">${frontmatter.year || new Date().getFullYear()}</div>
+                <h1 class="cover-title">${frontmatter.title_main || paperName}</h1>
+                <h1 class="cover-title-accent">${frontmatter.title_accent || ''}</h1>
+            </div>
+            <div class="cover-footer">
+                <div class="cover-contact-row">
+                    <div class="cover-contact-block">
+                        <div class="contact-label">Contact</div>
+                        <div class="contact-info">${frontmatter.contact || 'contact@dgb.com'}</div>
                     </div>
-                    <div class="cover-title-block">
-                        <div class="cover-year">${frontmatter.year || ''}</div>
-                        <div class="cover-title">
-                            ${frontmatter.title_main || ''}<br>
-                            <span class="cover-title-accent" style="background: linear-gradient(90deg, #ffcc00 0%, #ff5500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; font-size: 2.5rem; font-family: 'Roboto', Arial, Helvetica, sans-serif; font-weight: 900; letter-spacing: 0.02em;">
-                                ${frontmatter.title_accent || ''}
-                            </span>
-                        </div>
+                    <div class="divider"></div>
+                    <div class="cover-contact-block">
+                        <div class="contact-label">Website</div>
+                        <div class="contact-info">${frontmatter.website || 'www.dgb.com'}</div>
                     </div>
-                    <div class="cover-footer">
-                        <div class="cover-contact-row">
-                            <div class="cover-contact-block">
-                                <div class="contact-label">CONTATO</div>
-                                <div class="contact-info">${frontmatter.contact || ''}</div>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="cover-contact-block">
-                                <div class="contact-label">WEBSITE</div>
-                                <div class="contact-info">${frontmatter.website || ''}</div>
-                            </div>
-                        </div>
-                        <div class="cover-author-row">
-                            <img src="${frontmatter.author_photo || '/images/author.jpg'}" alt="${frontmatter.author || ''}" class="cover-author-photo">
-                            <div>
-                                <div class="author-name">${frontmatter.author || ''}</div>
-                                <div class="author-role">${frontmatter.role || ''}</div>
-                            </div>
-                        </div>
+                </div>
+                <div class="cover-author-row">
+                    <img src="${frontmatter.author_photo || '/images/author.jpg'}" alt="${frontmatter.author || ''}" class="cover-author-photo">
+                    <div>
+                        <div class="author-name">${frontmatter.author || ''}</div>
+                        <div class="author-role">${frontmatter.role || ''}</div>
                     </div>
                 </div>
             </div>
         `;
-        // Concatenate cover and content pages
+
+        // Load and render the new cover template
+        const coverTemplatePath = path.join(__dirname, 'templates', 'cover-html-shapes.html');
+        let coverTemplate = fsSync.readFileSync(coverTemplatePath, 'utf8');
+        const coverPage = coverTemplate.replace('<%= overlay %>', overlayHtml);
+
+        // Generate TOC only if frontmatter.toc is true
+        const tocPage = frontmatter.toc === true ? templateProcessor.generateTOC() : '';
+
+        // Concatenate cover, TOC, and content pages
         const html = `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -195,15 +146,21 @@ app.get('/:paperName', async (req, res, next) => {
             <link href="/styles/main.css" rel="stylesheet">
             <link href="/styles/print.css" rel="stylesheet" media="print">
             <link href="/styles/print-style-override.css" rel="stylesheet" media="print">
+            <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+            <script src="/js/main.js"></script>
         </head>
         <body>
             ${coverPage}
+            ${tocPage}
             ${contentPages.join('\n')}
             <a href="/${paperName}/pdf" class="export-pdf-btn" download>Export as PDF</a>
+            <script src="/js/export-toast.js"></script>
         </body>
         </html>`;
         res.send(html);
     } catch (error) {
+        console.error('Error rendering paper:', error);
         return res.status(404).send('Paper not found');
     }
 });
