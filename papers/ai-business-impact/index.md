@@ -21,7 +21,7 @@ Foi esse alerta que serviu como fagulha para a realização deste estudo. A inte
 
 Este estudo teve como objetivo entender como a IA impacta a cadeia de valor dos negócios. Para isso, realizamos uma análise detalhada de mais de 1.300 atividades distintas, agrupadas em 13 grandes categorias organizacionais. O foco foi mensurar, no nível da atividade, tanto o impacto potencial nos negócios quanto o grau de automatização viável com as tecnologias atuais.
 
-A própria análise foi conduzida com o suporte de IA, o que nos permitiu concluir um trabalho que, antes, exigiria dias de esforço manual, em apenas algumas horas.
+A própria análise foi conduzida com o suporte de IA, o que nos permitiu concluir, em poucas horas, um trabalho que antes exigiria dias de esforço manual.
 
 O futuro do trabalho já começou. Este estudo oferece uma bússola para quem quer liderar — e não apenas reagir — a essa transformação.
 
@@ -30,7 +30,7 @@ O futuro do trabalho já começou. Este estudo oferece uma bússola para quem qu
 ## METODOLOGIA
 ### Algoritmo
 
-Para este estudo, foi utilizado como base a última versão do "Process Classification Framework - Cross-Industry", da APQC. O framework fornece uma base de 1300 atividades, divididas em Categorias, Grupos de Processos e Processos.
+Para este estudo, utilizamos como base a última versão do "Process Classification Framework - Cross-Industry", da APQC. O framework fornece uma base de 1300 atividades, divididas em Categorias, Grupos de Processos e Processos.
 
 Para analisar as 1300 atividades presentes no documento, um algoritmo utilizando Python e ChatGPT 4o da OpenAI foi criado. Para garantir resultados mais sólidos, cada atividade foi analisada por 3 agentes (chatGPT) separadamente e, posteriormente, consolidados.
 
@@ -133,7 +133,7 @@ No algoritmo, cada atividade passa por um agente inicial, que faz a avaliação 
 
 ### Classificação das atividades
 
-A base de atividades do framework da APQC é dividida em Categorias, Grupos de Processos e Processos.
+O framework da APQC divide as atividades em Categorias, Grupos de Processos e Processos.
 
 [CASCADE][1][LEVEL 1][CATEGORY][Represents the highest level of process in the enterprise in general groupings such as manage customer service, supply chain, finance, and human capital.]
 [CASCADE][2][LEVEL 2][PROCESS GROUP][Groups of processes that are part of executing a category. Examples include perform after sales repairs, procurement, accounts payable, recruit/source, and develop sales strategy.]
@@ -184,7 +184,7 @@ Uma vez realizada a análise qualitativa, um segundo agente classifica, quantita
 
 A análise das 1300 atividades ocorreu em pouco menos de **40 minutos**, com um custo total de aproximadamente **US$30** (o custo é total e envolve: testes e análise final).
 
-A mesmma atividade levaria, no formato tradicional, dias de trabalho.
+A mesma atividade levaria, no formato tradicional, dias de trabalho.
 
 As Categorias presentes na lista são essas:
 
@@ -289,11 +289,11 @@ A média gerais foram:
 
 Os resultados das análises por atividade demonstraram algo que já é de conhecimento relativamente comum: a aplicação da AI Generativa nos processos corporativos, com a tecnologia em seu estado atual, tem um potencial de automação mmoderado. Embora possa ajudar a tornar os processos mais ágeis, ainda requer supervisão humana ou intervenção para tomada de decisões.
 
-Além disso, a partir da análose, também se concluiu que o impacto da aplicação da tecnologia, embora não sendo, no geral, absolutamente transoformador, tem o o potencial de trazer redução de custos, mais velocidade, qualidade e, em alguns casos, até impactos em indicadores financeiros relevantes.
+Além disso, a partir da análise, também se concluiu que o impacto da aplicação da tecnologia, embora não sendo, no geral, absolutamente transformador, tem o potencial de trazer redução de custos, mais velocidade, qualidade e, em alguns casos, até impactos em indicadores financeiros relevantes.
 
 **Aplicações**
 
-Embora os resultados relacionados aos potenciais sejam de conhecimento relativamente comum (o que não é de todo ruim, pois mostra que o método traz uma análise condizente com a realidade), os resultados das análises qualitativas pode ajudar a definir uma estratégia de uso da AI em diversas partes do negócio.
+Embora os resultados relacionados aos potenciais sejam de conhecimento relativamente comum (o que não é de todo ruim, pois mostra que o método traz uma análise condizente com a realidade), os resultados das análises qualitativas podem ajudar a definir uma estratégia de uso da AI em diversas partes do negócio.
 
 Selecionamos alguns desses resultados para ilustração: 
 
@@ -437,22 +437,22 @@ flowchart TD
 
 [GAP]
 
-Este processo capaz de trazer velocidade de resposta a mudanças de mercado e movimento de competidores; maior qualidade na criação e execução de planos de ação; e uma cultura organizacional mais orientada a dados - permitindo decisões estratégicas contínuas baseadas em evidências, em vez de apenas ciclos anuais ou percepções pontuais. Além disso, fortalece a capacidade de antecipação e adaptação da empresa, gerando vantagem competitiva sustentável.
+Esse processo é capaz de trazer velocidade de resposta a mudanças de mercado e movimento de competidores; maior qualidade na criação e execução de planos de ação; e uma cultura organizacional mais orientada a dados - permitindo decisões estratégicas contínuas baseadas em evidências, em vez de apenas ciclos anuais ou percepções pontuais. Além disso, fortalece a capacidade de antecipação e adaptação da empresa, gerando vantagem competitiva sustentável.
 
 ---
 
 A partir de uma avaliação geral dos resultados qualitativos, fica claro que, em sua maioria, a utilização de AI generativa está focada em:
 1. **Leitura / Avaliação Cognitiva**: grandes bases de dados, documentos, notícias, reports, interações, reviews, redes sociais, etc;
 2. **Geração de Reports, Insights**: consolidação das avaliações cognitivas em insights e reports estruturados e detalhados para tomada de decisões e ações;
-3. **Ação automática**: Ação autommática em processos específicos, seguindo critérios pré-definidos, sem necessidade de interação humana..
+3. **Ação automática**: Ação automática em processos específicos, seguindo critérios pré-definidos, sem necessidade de interação humana..
 
-A partir dos resultados gerados, é possível estruturar outros processos com avaliação / ação *ongoing* utilizando AI generativa. Em última instância, é possível integrar toda a cadeia de valor em um processo macro, unindo agentes autônomos com acesso a ferramentas específicas, capazes de auxiliar toda a organição ativamente.
+A partir dos resultados gerados, é possível estruturar outros processos com avaliação / ação *ongoing* utilizando AI generativa. Em última instância, é possível integrar toda a cadeia de valor em um processo macro, unindo agentes autônomos com acesso a ferramentas específicas, capazes de auxiliar toda a organização ativamente.
 
 [PAGEBREAK]
 
 ## CONCLUSÃO
 
-### Avaliação do método e potencial de Melhorias
+### Avaliação do método e potencial de melhorias
 
 O método utilizado, embora careça de análises mais profundas e detalhadas, serve de *proof of concept*, podendo ser expandido para aplicações diversas para consultoria ou negócios tradicionais.
 
@@ -460,7 +460,7 @@ A criação dos *prompts* se mostrou especialmente relevante no resultado final.
 
 Em uma segunda implementação, cada atividade poderia ser avaliada com um número maior de critérios, cada um com um peso, para dar um panorama mais detalhado e assertivo.
 
-O método também pode ser expandido para aplicações diversas. A utilização de frameworks como **LangChain** e **LanGraph** para criação de agentes ainda mais inteligentes (com técnicas como *chain of though*, *tree of though* e/ou *few shot*, ao invés da metodologia *zero shot* utilizada), coma cessoa ferramentas específicas (como código em python ou busca na internt) poderia trazer resultados ainda melhores.
+O método também pode ser expandido para aplicações diversas. A utilização de frameworks como **LangChain** e **LangGraph** para criação de agentes ainda mais inteligentes (com técnicas como *chain of thought*, *tree of thought* e/ou *few shot*, ao invés da metodologia *zero shot* utilizada), com acesso a ferramentas específicas (como código em python ou busca na internet) poderia trazer resultados ainda melhores.
 
 ### Considerações finais
 
@@ -482,7 +482,7 @@ A adoção estratégica dessas tecnologias não é uma questão de "se", mas de 
 
 [PAGEBREAK]
 
-### Commo estamos utilizando AI
+### Como estamos utilizando AI
 
 Na DGB Consultores, estamos estruturando o uso de inteligência artificial de forma estratégica e com foco em impacto real. Internamente, iniciamos a adoção da tecnologia em frentes selecionadas, como apoio à análise de dados e aceleração de diagnósticos. Paralelamente, estamos desenvolvendo plataformas avançadas para nossos clientes, que integram IA a frameworks estratégicos, automação de insights e processos de decisão orientados por dados. Nossa atuação com IA não é pontual — faz parte de uma visão clara de futuro, em que a inteligência artificial será um dos pilares centrais para gerar vantagem competitiva e transformar a forma como as empresas operam.
 
